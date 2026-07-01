@@ -33,6 +33,7 @@ BuildRequires:  selinux-policy-devel
 
 Requires(pre):  shadow-utils
 Requires:       (libpcre2-8 or pcre2)
+Requires:       logrotate
 %{?systemd_requires}
 # SELinux policy is loaded in scriptlets; require the tooling.
 Requires(post):   policycoreutils
@@ -56,7 +57,7 @@ CHANGES-FROM-UPSTREAM.md for the full list of modifications.
 # In a network-isolated build (mock/koji), vendor dependencies first
 # (`cd src/go && go mod vendor`) and ship the vendor/ tree in Source0, or
 # provide a populated module cache. GOFLAGS below prefers vendor if present.
-export GOFLAGS="-mod=mod"
+export GOFLAGS="-mod=mod -trimpath"
 ./bootstrap.sh
 # sysconfdir=/etc/netwatch makes the compiled default config path
 # /etc/netwatch/netwatch_agent.conf (via -X main.confDefault).
@@ -74,6 +75,9 @@ make -C packaging/selinux -f %{_datadir}/selinux/devel/Makefile netwatch-agent.p
 %install
 # --- binary ---
 install -D -m 0755 src/go/bin/netwatch_agent %{buildroot}%{_sbindir}/netwatch_agent
+# Strip debug info (debug_package is disabled); keeps the package small and
+# clears rpmlint's unstripped-binary warning.
+strip %{buildroot}%{_sbindir}/netwatch_agent
 
 # --- main config + include dirs ---
 install -D -m 0640 src/go/conf/netwatch_agent.conf \
@@ -90,7 +94,7 @@ install -d -m 0750 %{buildroot}%{_localstatedir}/log/netwatch
 # --- systemd / sysconfig / tmpfiles / logrotate / firewalld ---
 install -D -m 0644 packaging/systemd/netwatch-agent.service \
         %{buildroot}%{_unitdir}/netwatch-agent.service
-install -D -m 0640 packaging/sysconfig/netwatch-agent \
+install -D -m 0644 packaging/sysconfig/netwatch-agent \
         %{buildroot}%{_sysconfdir}/sysconfig/netwatch-agent
 install -D -m 0644 packaging/tmpfiles.d/netwatch-agent.conf \
         %{buildroot}%{_tmpfilesdir}/netwatch-agent.conf
@@ -150,7 +154,7 @@ fi
 %dir %attr(0755,root,root) %{_sysconfdir}/netwatch/netwatch_agent.d/plugins.d
 %config(noreplace) %attr(0640,root,%{agentgroup}) %{_sysconfdir}/netwatch/netwatch_agent.conf
 %config(noreplace) %{_sysconfdir}/netwatch/netwatch_agent.d/plugins.d/*.conf
-%config(noreplace) %attr(0640,root,root) %{_sysconfdir}/sysconfig/netwatch-agent
+%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/sysconfig/netwatch-agent
 %config(noreplace) %{_sysconfdir}/logrotate.d/netwatch-agent
 %{_unitdir}/netwatch-agent.service
 %{_tmpfilesdir}/netwatch-agent.conf
@@ -159,5 +163,5 @@ fi
 %dir %attr(0750,%{agentuser},%{agentgroup}) %{_localstatedir}/log/netwatch
 
 %changelog
-* Thu Jul 02 2026 Netwatch <noreply@example.com> - 7.0.27-1
+* Wed Jul 01 2026 Netwatch <noreply@example.com> - 7.0.27-1
 - Initial Netwatch Agent package: rebranded build of Zabbix Agent 2 7.0.27 (AGPLv3).
