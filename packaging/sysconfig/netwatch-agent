@@ -1,0 +1,6 @@
+# Netwatch Agent systemd service configuration.
+# Variables set here are read by the netwatch-agent.service unit
+# (via EnvironmentFile) and override its defaults.
+
+# Path to the Netwatch Agent configuration file.
+#CONFFILE=/etc/netwatch/netwatch_agent.conf
