@@ -2022,8 +2022,8 @@ AC_SUBST(RANLIB)
 SERVER_CONFIG_FILE="${sysconfdir}/zabbix_server.conf"
 PROXY_CONFIG_FILE="${sysconfdir}/zabbix_proxy.conf"
 AGENT_CONFIG_FILE="${sysconfdir}/zabbix_agentd.conf"
-AGENT2_CONFIG_FILE="${sysconfdir}/zabbix_agent2.conf"
-AGENT2_CONFIG_DIR="${sysconfdir}/zabbix_agent2.d"
+AGENT2_CONFIG_FILE="${sysconfdir}/netwatch_agent.conf"
+AGENT2_CONFIG_DIR="${sysconfdir}/netwatch_agent.d"
 AGENT2_PLUGIN_CONFIG_DIR="${AGENT2_CONFIG_DIR}/plugins.d"
 WEBSERVICE_CONFIG_FILE="${sysconfdir}/zabbix_web_service.conf"
 

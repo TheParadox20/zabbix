@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>Netwatch Agent</short>
+  <description>Netwatch monitoring agent (passive checks). Accepts connections from the monitoring server/proxy on TCP port 10050.</description>
+  <port protocol="tcp" port="10050"/>
+</service>

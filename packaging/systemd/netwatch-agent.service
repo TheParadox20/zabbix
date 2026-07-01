@@ -1,0 +1,21 @@
+[Unit]
+Description=Netwatch Agent
+After=network.target
+
+[Service]
+Environment="CONFFILE=/etc/netwatch/netwatch_agent.conf"
+EnvironmentFile=-/etc/sysconfig/netwatch-agent
+Type=simple
+Restart=on-failure
+RestartSec=10s
+PIDFile=/run/netwatch/netwatch_agent.pid
+KillMode=control-group
+ExecStart=/usr/sbin/netwatch_agent -c $CONFFILE -f
+ExecStop=/bin/kill -SIGTERM $MAINPID
+User=netwatch
+Group=netwatch
+RuntimeDirectory=netwatch
+RuntimeDirectoryMode=0755
+
+[Install]
+WantedBy=multi-user.target

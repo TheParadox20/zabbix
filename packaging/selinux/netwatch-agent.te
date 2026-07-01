@@ -1,0 +1,83 @@
+policy_module(netwatch-agent, 1.0.0)
+
+########################################
+#
+# Declarations
+#
+
+require {
+    type node_t;
+    type unreserved_port_t;
+    class tcp_socket { name_bind name_connect };
+    class capability { setuid setgid dac_read_search };
+}
+
+type netwatch_agent_t;
+type netwatch_agent_exec_t;
+init_daemon_domain(netwatch_agent_t, netwatch_agent_exec_t)
+
+# Persistent state / logs / runtime pid
+type netwatch_agent_conf_t;
+files_config_file(netwatch_agent_conf_t)
+
+type netwatch_agent_log_t;
+logging_log_file(netwatch_agent_log_t)
+
+type netwatch_agent_var_run_t;
+files_pid_file(netwatch_agent_var_run_t)
+
+########################################
+#
+# Local policy
+#
+# NOTE: A monitoring agent legitimately runs many external commands
+# (system.run items, several plugins). Confining that fully is an
+# iterative process. This module ships the domain in PERMISSIVE mode so
+# that on a real RHEL host it LOGS denials (visible via `ausearch -m avc`)
+# without breaking functionality. Once denials are reviewed and folded in,
+# remove the permissive line below to enforce.
+permissive netwatch_agent_t;
+
+allow netwatch_agent_t self:capability { setuid setgid dac_read_search };
+allow netwatch_agent_t self:process signal;
+allow netwatch_agent_t self:fifo_file rw_fifo_file_perms;
+allow netwatch_agent_t self:unix_stream_socket create_stream_socket_perms;
+allow netwatch_agent_t self:tcp_socket create_stream_socket_perms;
+allow netwatch_agent_t self:udp_socket create_socket_perms;
+
+# Configuration (read-only)
+read_files_pattern(netwatch_agent_t, netwatch_agent_conf_t, netwatch_agent_conf_t)
+read_lnk_files_pattern(netwatch_agent_t, netwatch_agent_conf_t, netwatch_agent_conf_t)
+files_search_etc(netwatch_agent_t)
+
+# Log files
+manage_files_pattern(netwatch_agent_t, netwatch_agent_log_t, netwatch_agent_log_t)
+manage_dirs_pattern(netwatch_agent_t, netwatch_agent_log_t, netwatch_agent_log_t)
+logging_log_filetrans(netwatch_agent_t, netwatch_agent_log_t, { file dir })
+
+# PID file under /run/netwatch
+manage_files_pattern(netwatch_agent_t, netwatch_agent_var_run_t, netwatch_agent_var_run_t)
+manage_dirs_pattern(netwatch_agent_t, netwatch_agent_var_run_t, netwatch_agent_var_run_t)
+files_pid_filetrans(netwatch_agent_t, netwatch_agent_var_run_t, { file dir })
+
+# Passive checks: bind/listen on tcp/10050 (falls under unreserved_port_t, >1023).
+# If you allocate a dedicated port type instead, replace unreserved_port_t.
+allow netwatch_agent_t self:tcp_socket { listen accept };
+allow netwatch_agent_t unreserved_port_t:tcp_socket name_bind;
+allow netwatch_agent_t node_t:tcp_socket node_bind;
+# Active checks: connect out to the monitoring server/proxy.
+allow netwatch_agent_t unreserved_port_t:tcp_socket name_connect;
+corenet_tcp_connect_all_ports(netwatch_agent_t)
+corenet_tcp_bind_generic_node(netwatch_agent_t)
+
+# Common runtime needs
+files_read_etc_files(netwatch_agent_t)
+files_read_usr_files(netwatch_agent_t)
+libs_use_ld_so(netwatch_agent_t)
+libs_use_shared_libs(netwatch_agent_t)
+miscfiles_read_localization(netwatch_agent_t)
+sysnet_read_config(netwatch_agent_t)
+kernel_read_system_state(netwatch_agent_t)
+kernel_read_network_state(netwatch_agent_t)
+corecmd_exec_bin(netwatch_agent_t)
+corecmd_exec_shell(netwatch_agent_t)

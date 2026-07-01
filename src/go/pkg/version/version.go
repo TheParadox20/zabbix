@@ -145,7 +145,7 @@ func TitleMessage() string {
 // Program version includes Zabbix revision and it's time and date, compilation time and date, Go compiler tree's
 // version string, copyright message, and additionalMessages provided by the caller function.
 func Display(additionalMessages []string) {
-	fmt.Printf("%s (Zabbix) %s\n", TitleMessage(), Long())
+	fmt.Printf("%s (Netwatch) %s\n", TitleMessage(), Long())
 	fmt.Printf(
 		"Revision %s %s, compilation time: %s %s, built with: %s\n",
 		Revision(), RevDate(), CompileDate(), CompileTime(), runtime.Version(),
