@@ -1,4 +1,4 @@
-policy_module(netwatch-agent, 1.1.0)
+policy_module(netwatch-agent, 1.2.0)
 
 ########################################
 #
@@ -11,6 +11,10 @@ require {
     type cgroup_t;
     type unreserved_port_t;
     type zabbix_agent_port_t;
+    type proc_kcore_t;
+    type initctl_t;
+    type hugetlbfs_t;
+    type ptmx_t;
 }
 
 type netwatch_agent_t;
@@ -103,6 +107,26 @@ auth_use_nsswitch(netwatch_agent_t)
 corecmd_exec_bin(netwatch_agent_t)
 corecmd_exec_shell(netwatch_agent_t)
 init_read_utmp(netwatch_agent_t)
+
+# --- device discovery (vfs.dev.* stats every node under /dev) ---
+dev_getattr_all_chr_files(netwatch_agent_t)
+dev_getattr_all_blk_files(netwatch_agent_t)
+dev_read_generic_symlinks(netwatch_agent_t)
+allow netwatch_agent_t ptmx_t:chr_file getattr;
+allow netwatch_agent_t hugetlbfs_t:dir getattr;
+
+# --- syslog (LogType=system / /dev/log) ---
+logging_send_syslog_msg(netwatch_agent_t)
+
+# --- installed-package inventory (system.sw.packages runs rpm) ---
+optional_policy(`
+    rpm_exec(netwatch_agent_t)
+    rpm_read_db(netwatch_agent_t)
+')
+
+# --- harmless stats hit while walking /dev and /proc; silence the noise ---
+dontaudit netwatch_agent_t proc_kcore_t:file getattr;
+dontaudit netwatch_agent_t initctl_t:fifo_file getattr;
 
 # --- common runtime needs ---
 files_read_etc_files(netwatch_agent_t)
