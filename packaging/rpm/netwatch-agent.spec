@@ -3,7 +3,7 @@
 %global agentgroup netwatch
 
 Name:           netwatch-agent
-Version:        7.0.27
+Version:        7.4.11
 Release:        1%{?dist}
 Summary:        Netwatch-branded monitoring agent (rebranded Zabbix Agent 2)
 
@@ -83,7 +83,10 @@ strip %{buildroot}%{_sbindir}/netwatch_agent
 install -D -m 0640 src/go/conf/netwatch_agent.conf \
         %{buildroot}%{_sysconfdir}/netwatch/netwatch_agent.conf
 install -d -m 0755 %{buildroot}%{_sysconfdir}/netwatch/netwatch_agent.d/plugins.d
-for f in src/go/conf/zabbix_agent2.d/plugins.d/*.conf; do
+# Top-level plugin configs, plus the nix/ subdir added in 7.4 (mysql, oracle).
+# The [ -e ] guard skips a non-matching glob (e.g. no nix/ on 7.0).
+for f in src/go/conf/zabbix_agent2.d/plugins.d/*.conf \
+         src/go/conf/zabbix_agent2.d/plugins.d/nix/*.conf; do
     [ -e "$f" ] || continue
     install -m 0644 "$f" %{buildroot}%{_sysconfdir}/netwatch/netwatch_agent.d/plugins.d/
 done
@@ -163,5 +166,8 @@ fi
 %dir %attr(0750,%{agentuser},%{agentgroup}) %{_localstatedir}/log/netwatch
 
 %changelog
+* Wed Jul 01 2026 Netwatch <noreply@example.com> - 7.4.11-1
+- Rebase onto Zabbix 7.4.11 (non-LTS); package the plugins.d/nix/ configs.
+
 * Wed Jul 01 2026 Netwatch <noreply@example.com> - 7.0.27-1
 - Initial Netwatch Agent package: rebranded build of Zabbix Agent 2 7.0.27 (AGPLv3).

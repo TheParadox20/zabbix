@@ -9,13 +9,13 @@ complying with the upstream license.
 - **Project:** Zabbix
 - **Homepage:** https://www.zabbix.com
 - **Source:** https://github.com/zabbix/zabbix
-- **Forked from tag:** `7.0.27` (7.0 LTS, GA)
+- **Forked from tag:** `7.4.11` (7.4 release line, **non-LTS**, GA)
 - **License:** GNU Affero General Public License, version 3 (AGPLv3).
   The full license text is preserved verbatim in [`COPYING`](COPYING) and is
   unchanged from upstream.
 
 > Note: earlier planning notes referred to "GPLv2". That is incorrect for this
-> version — Zabbix 7.0 is licensed under **AGPLv3**. All packaging and
+> version — Zabbix 7.x is licensed under **AGPLv3**. All packaging and
 > compliance artifacts in this repo use AGPLv3.
 
 ## Nature of the changes
@@ -35,7 +35,7 @@ Naming applied:
 | `zabbix` (user/group) | `netwatch` |
 | `/etc/zabbix`, `/var/log/zabbix`, `/run/zabbix` | `/etc/netwatch`, `/var/log/netwatch`, `/run/netwatch` |
 
-### Files changed vs. tag `7.0.27`
+### Files changed vs. tag `7.4.11`
 
 - `src/go/cmd/zabbix_agent2/zabbix_agent2.go` — usage/help banner, startup/
   shutdown log lines, error prefixes, `-f` flag description.
@@ -80,7 +80,7 @@ Zabbix branding/trademark.
 
 The complete corresponding source for this build is the fork:
 
-- https://github.com/TheParadox20/zabbix (branch `netwatch-rebrand`)
+- https://github.com/TheParadox20/zabbix (branch `netwatch-rebrand-7.4`)
 
 This must remain **publicly accessible** to satisfy AGPLv3's source-provision
 requirements. Under AGPLv3 §13, if the agent is ever modified to let remote
@@ -88,4 +88,4 @@ users interact with it over a network, those users must also be offered the
 corresponding source; the current rebrand introduces no such interaction
 beyond the standard monitoring protocol.
 
-_Rebrand date: 2026-07-02. Base: Zabbix 7.0.27._
+_Rebrand date: 2026-07-02. Base: Zabbix 7.4.11._

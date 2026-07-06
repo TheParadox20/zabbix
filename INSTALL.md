@@ -44,14 +44,14 @@ go version                                       # go1.25.11 (must be >= 1.25.9)
 ## 3. Clone the source
 
 ```bash
-git clone -b netwatch-rebrand https://github.com/TheParadox20/zabbix.git netwatch-agent
+git clone -b netwatch-rebrand-7.4 https://github.com/TheParadox20/zabbix.git netwatch-agent
 cd netwatch-agent
 ```
 
 ## 4. Build the RPM
 
 ```bash
-VER=7.0.27
+VER=7.4.11
 mkdir -p ~/rpmbuild/SOURCES
 git archive --format=tar.gz --prefix=netwatch-agent-${VER}/ \
     -o ~/rpmbuild/SOURCES/netwatch-agent-${VER}.tar.gz HEAD
@@ -63,7 +63,7 @@ the Go agent) and builds the SELinux policy module. It takes a few minutes and
 finishes with:
 
 ```
-Wrote: /root/rpmbuild/RPMS/x86_64/netwatch-agent-7.0.27-1.el9.x86_64.rpm
+Wrote: /root/rpmbuild/RPMS/x86_64/netwatch-agent-7.4.11-1.el9.x86_64.rpm
 ```
 
 ## 5. Verify the build
@@ -81,7 +81,7 @@ non-standard (dedicated service account), and there is no man page.
 ## 6. Install
 
 ```bash
-dnf install -y ~/rpmbuild/RPMS/x86_64/netwatch-agent-7.0.27-1.el9.x86_64.rpm
+dnf install -y ~/rpmbuild/RPMS/x86_64/netwatch-agent-7.4.11-1.el9.x86_64.rpm
 ```
 
 Installing creates the `netwatch` system user/group, the directories under
@@ -125,7 +125,7 @@ systemctl status netwatch-agent --no-pager
 ## 9. Confirm it works
 
 ```bash
-netwatch_agent -V                                # shows "netwatch_agent (Netwatch) 7.0.27"
+netwatch_agent -V                                # shows "netwatch_agent (Netwatch) 7.4.11"
 tail /var/log/netwatch/netwatch_agent.log        # startup + hostname line
 ```
 
